@@ -1,7 +1,7 @@
 
 var sprintf = function(fmt, args){
     var result = "";
-    var argAt = 0;
+    var argAt = 1;
     for(var i = 0; i < fmt.length; i++){
         var c = fmt.charAt(i);
         if(c == "%"){
@@ -39,7 +39,7 @@ var sprintf = function(fmt, args){
             for(; p < str.length; p++){
                 var wChar = str.charAt(p);
                 if(wChar == '.') break;
-                if(wChar == '*'){width = args[argAt++]; break;}
+                if(wChar == '*'){width = arguments[argAt++]; break;}
                 width += wChar;
             }
             width = Math.round(width);
@@ -55,7 +55,7 @@ var sprintf = function(fmt, args){
             }
             precision = Math.round(precision);
             
-            var param = args[argAt++];
+            var param = arguments[argAt++];
             result += sprintf.specifiers[specifier](param, {"flags": flags, "width": width, "precision": precision});
             i=sPosition;
         }else
@@ -143,4 +143,4 @@ sprintf.flags = {
     LEFTPAD: 1<<5
 };
 
-console.log(sprintf("%10f", [123.456]));;
+//console.log(sprintf("%*s", 10,"POOOP"));;
