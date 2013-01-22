@@ -35,26 +35,19 @@ var sprintf = function(fmt, args){
                 else
                     break;
             }
+            var precisionOffset = str.indexOf(".");
             //Read the width
-            for(; p < str.length; p++){
-                var wChar = str.charAt(p);
-                if(wChar == '.') break;
-                if(wChar == '*'){width = arguments[argAt++]; break;}
-                width += wChar;
-            }
-            width = Math.round(width);
-            
+            width = str.substring(p, precisionOffset===-1?str.length:precisionOffset);
+            if(width == "*")
+                width = arguments[argAt++];
+            width = Math.round(precision);
             //read the precision
             //make sure that p is at a precision marker
-            for(; p < str.length; p++){
-                if(str.charAt(p)=='.')break;
-            }
-            p++;
-            for(; p < str.length; p++){
-                precision += str.charAt(p);
-            }
+            if(precisionOffset!==-1)
+                precision = str.substr(precisionOffset+1);
+            if(precision == "*")
+                precision = arguments[argAt++];
             precision = Math.round(precision);
-            
             var param = arguments[argAt++];
             result += sprintf.specifiers[specifier](param, {"flags": flags, "width": width, "precision": precision});
             i=sPosition;
@@ -79,59 +72,53 @@ sprintf.lpad = function(str, amount, char){
     return sprintf.pad(str, amount, char, true);
 };
 sprintf.rpad = sprintf.pad;
-sprintf.specifiers = 
-    {'s': function(arg, properties){
-         properties = properties || {flags: 0, width: 0, precision: 0};
-        var result = arg+"";
-        result = sprintf.pad(result, 
-                             properties.width, 
-                             (properties.flags & sprintf.flags.SPACE) ? ' ':'0', 
-                             properties.flags & sprintf.flags.LEFT_JUSTIFY);
-        return result;
-    },
-     'x': function(arg, properties){
-         properties = properties || {flags: 0, width: 0, precision: 0};
-         var result = parseInt(arg,10).toString(16);
-         if(properties.flags & sprintf.flags.PREFIX)
-            result = "0x"+result;
-         return result;
-     },
-     'X': function(arg, properties){
-         properties = properties || {flags: 0, width: 0, precision: 0};
-         var result = parseInt(arg,10).toString(16);
-         if(properties.flags & sprintf.flags.PREFIX)
-            result = "0x"+result;
-         return result.toUpperCase();
-     },
-     'd': function(arg, properties){
-         var result = parseInt(arg,10);
-         properties = properties || {flags: 0, width: 0, precision: 0};
-         
-         if(properties.flags & sprintf.flags.SHOW_SIGN)
-            result = (result<0?'-':'+') + result;
-            
-          result = sprintf.pad(result, 
-                               properties.width, 
-                               (properties.flags & sprintf.flags.SPACE) ? ' ':'0', 
-                               properties.flags & sprintf.flags.LEFT_JUSTIFY);
-                               
-         return result;
-    },
-     'f': function(arg, properties){
-         var result = parseFloat(arg);
-         properties = properties || {flags: 0, width: 0, precision: 0};
-         if(properties.flags & sprintf.flags.SHOW_SIGN)
-            result = (result<0?'-':'+') + result;
-         if(properties.flags & sprintf.flags.SUFFIX)
-            result+='.';
-         result = sprintf.pad(result, 
-                              properties.width, 
-                              (properties.flags & sprintf.flags.SPACE) ? ' ':'0', 
-                              properties.flags & sprintf.flags.LEFT_JUSTIFY);
-         return result;
-    },
-     '%': function(arg, properties){return '%';},
-    };
+sprintf.specifiers = {};
+sprintf.specifiers["%"] = function(){return "%";};
+sprintf.specifiers.s = function(arg, properties){
+    properties = properties || {flags: 0, width: 0, precision: 0};
+    var result = arg+"";
+    result = sprintf.pad(result, 
+                         properties.width, 
+                         (properties.flags & sprintf.flags.SPACE) ? ' ':'0', 
+                         properties.flags & sprintf.flags.LEFT_JUSTIFY);
+   return result;
+};
+sprintf.specifiers.x = function(arg, properties){
+    properties = properties || {flags: 0, width: 0, precision: 0};
+    var result = parseInt(arg,10).toString(16);
+    if(properties.flags & sprintf.flags.PREFIX)
+        result = "0x"+result;
+    return result;
+};
+sprintf.specifiers.X = function(arg, properties){return sprintf.specifiers.x(arg, properties).toUpperCase();};
+sprintf.specifiers.f = function(arg, properties){
+    var result = parseFloat(arg);
+    properties = properties || {flags: 0, width: 0, precision: 0};
+    if(properties.flags & sprintf.flags.SUFFIX && result % 1 === 0)
+    result+='.';
+    if(properties.flags & sprintf.flags.SHOW_SIGN)
+    result = (result<0?'-':'+') + result;
+    result = sprintf.pad(result, 
+                      properties.width, 
+                      (properties.flags & sprintf.flags.SPACE) ? ' ':'0', 
+                      properties.flags & sprintf.flags.LEFT_JUSTIFY);
+    return result;
+};
+sprintf.specifiers.d = function(arg, properties){
+    var result = parseInt(arg,10);
+    properties = properties || {flags: 0, width: 0, precision: 0};
+    
+    if(properties.flags & sprintf.flags.SHOW_SIGN)
+    result = (result<0?'-':'+') + result;
+    
+    result = sprintf.pad(result, 
+                       properties.width, 
+                       (properties.flags & sprintf.flags.SPACE) ? ' ':'0', 
+                       properties.flags & sprintf.flags.LEFT_JUSTIFY);
+                       
+    return result;
+};
+
 sprintf.flags = {
     LEFT_JUSTIFY: 1<<0,
     SHOW_SIGN: 1<<1,
@@ -143,4 +130,4 @@ sprintf.flags = {
     LEFTPAD: 1<<5
 };
 
-//console.log(sprintf("%*s", 10,"POOOP"));;
+//console.log(sprintf("%s %f %d %x %X", "hi!", Math.PI, 50, 12, 255, 255));
