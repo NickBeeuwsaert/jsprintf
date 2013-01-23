@@ -40,7 +40,7 @@ var sprintf = function(fmt, args){
             width = str.substring(p, precisionOffset===-1?str.length:precisionOffset);
             if(width == "*")
                 width = arguments[argAt++];
-            width = Math.round(precision);
+            width = Math.round(width);
             //read the precision
             //make sure that p is at a precision marker
             if(precisionOffset!==-1)
@@ -49,6 +49,7 @@ var sprintf = function(fmt, args){
                 precision = arguments[argAt++];
             precision = Math.round(precision);
             var param = arguments[argAt++];
+            //console.log("%s(\"%s\", {flags: b%s, width: %d, precision: %d})", specifier, param, flags.toString(2), width, precision);
             result += sprintf.specifiers[specifier](param, {"flags": flags, "width": width, "precision": precision});
             i=sPosition;
         }else
@@ -74,6 +75,10 @@ sprintf.lpad = function(str, amount, char){
 sprintf.rpad = sprintf.pad;
 sprintf.specifiers = {};
 sprintf.specifiers["%"] = function(){return "%";};
+sprintf.specifiers.c = function(arg, properties){
+    properties = properties || {};
+    return (arg+"").charAt(properties.width || 0)
+};
 sprintf.specifiers.s = function(arg, properties){
     properties = properties || {flags: 0, width: 0, precision: 0};
     var result = arg+"";
@@ -130,4 +135,4 @@ sprintf.flags = {
     LEFTPAD: 1<<5
 };
 
-//console.log(sprintf("%s %f %d %x %X", "hi!", Math.PI, 50, 12, 255, 255));
+console.log(sprintf("%#-+ *.*s", 1,2,"123"));
