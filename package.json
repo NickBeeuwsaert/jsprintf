@@ -1,0 +1,24 @@
+{
+  "name": "jsprintf",
+  "version": "1.0.0",
+  "description": "Sweet little sprintf implementation in Javascript",
+  "main": "jsprintf.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NickBeeuwsaert/jsprintf.git"
+  },
+  "keywords": [
+    "sprintf",
+    "string",
+    "formatting"
+  ],
+  "author": "Nick Beeuwsaert",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NickBeeuwsaert/jsprintf/issues"
+  },
+  "homepage": "https://github.com/NickBeeuwsaert/jsprintf#readme"
+}

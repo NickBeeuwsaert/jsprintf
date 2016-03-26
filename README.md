@@ -1,10 +1,19 @@
-# Hello!
+# JSprintf
 
-Here we have a crappy little sprintf implementation for javascript! yay!
+Here we have a little sprintf implementation for javascript!
 
-Things to note! 
+## TODO
 
-* some things(like precision) haven't been implemented, so feel free to submit a pull request if by I haven't implemented this by the time you are reading it
+* Implement some features
+* Add tests. Everybody loves tests
 
+## BONUS FEATURES
+This library doubles as a left padding module. Watch:
 
-So that about covers it I guess
+```
+let left_pad = require("jsprintf").lpad;
+
+console.log(left_pad("Hello", 10, '0')); // -> 00000Hello
+```
+
+Cool, huh?
